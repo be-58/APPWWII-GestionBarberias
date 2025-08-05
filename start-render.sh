@@ -16,8 +16,12 @@ composer dump-autoload --optimize
 echo "Running migrations..."
 php artisan migrate --force
 
-echo "Seeding database..."
+echo "Running all seeders..."
 php artisan db:seed --force
+
+echo "Running specific seeders to ensure they execute..."
+php artisan db:seed --class=RoleSeeder --force
+php artisan db:seed --class=UserSeeder --force
 
 echo "Starting web server..."
 exec /start.sh
