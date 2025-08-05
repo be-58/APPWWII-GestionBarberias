@@ -17,6 +17,7 @@ RUN chown -R nginx:nginx /var/www/html \
 
 # Configurar nginx
 COPY nginx.conf /etc/nginx/sites-available/default.conf
+RUN ln -sf /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default
 
 # Copiar y hacer ejecutables los scripts
 COPY deploy.sh /var/www/html/deploy.sh
@@ -25,9 +26,6 @@ RUN chmod +x /var/www/html/deploy.sh /var/www/html/start-render.sh
 
 # Exponer puerto 80 para Render
 EXPOSE 80
-
-# Ejecutar el script de deploy al build
-RUN /var/www/html/deploy.sh
 
 # Comando de inicio
 CMD ["/var/www/html/start-render.sh"]
