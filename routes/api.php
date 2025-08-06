@@ -79,6 +79,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/barberos/{barbero}', [BarberoController::class, 'destroy']);
         Route::get('/barberos/{barbero}', [BarberoController::class, 'show']);
         
+        // Asignación de servicios a barbero
+        Route::post('/barberos/{barbero}/asignacion', [BarberoController::class, 'asignarServicios']);
         // Gestión de Servicios
         Route::post('/servicios', [ServicioController::class, 'store']);
         Route::put('/servicios/{servicio}', [ServicioController::class, 'update']);

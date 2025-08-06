@@ -17,6 +17,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BarberoController extends Controller
 {
+
     use AuthorizesRequests;
     /**
      * Display a listing of the resource.
@@ -26,7 +27,7 @@ class BarberoController extends Controller
         $user = Auth::user();
         $userRole = $user->role ? $user->role->nombre : null;
         $barberia_id = request('barberia_id');
-        
+
         if ($userRole === 'admin') {
             // Admin puede ver todos los barberos o filtrar por barbería
             if ($barberia_id) {
@@ -56,6 +57,27 @@ class BarberoController extends Controller
     }
 
     /**
+     * Asignar servicios a un barbero específico.
+     */
+    public function asignarServicios(Request $request, Barbero $barbero)
+    {
+        // Autorización: solo el dueño de la barbería puede asignar servicios
+        $this->authorize('update', $barbero);
+
+        $servicios = $request->input('servicios', []);
+        if (!is_array($servicios)) {
+            return response()->json(['message' => 'El campo servicios debe ser un array.'], 422);
+        }
+
+        $barbero->servicios()->sync($servicios);
+
+        return response()->json([
+            'message' => 'Servicios asignados correctamente.',
+            'data' => $barbero->fresh()->load('servicios')
+        ]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreBarberoRequest $request)
@@ -81,7 +103,7 @@ class BarberoController extends Controller
             if (!empty($validated['servicios'])) {
                 $barbero->servicios()->sync($validated['servicios']);
             }
-            
+
             return $barbero;
         });
 
@@ -106,14 +128,14 @@ class BarberoController extends Controller
     public function update(UpdateBarberoRequest $request, Barbero $barbero)
     {
         // Autorización: solo el dueño de la barbería puede editar al barbero
-        $this->authorize('update', $barbero); 
+        $this->authorize('update', $barbero);
 
         $validated = $request->validated();
-        
+
         DB::transaction(function () use ($validated, $barbero) {
             // Actualizar datos del usuario
             $barbero->user->update($validated['user_data']);
-            
+
             // Actualizar datos del barbero
             $barbero->update($validated['barbero_data']);
 
