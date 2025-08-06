@@ -32,9 +32,9 @@ class BarberoController extends Controller
             // Admin puede ver todos los barberos o filtrar por barbería
             if ($barberia_id) {
                 $barberos = Barbero::where('barberia_id', $barberia_id)
-                    ->with('user', 'servicios', 'barberia')->get();
+                    ->with('user', 'servicios', 'barberia', 'horarios')->get();
             } else {
-                $barberos = Barbero::with('user', 'servicios', 'barberia')->get();
+                $barberos = Barbero::with('user', 'servicios', 'barberia', 'horarios')->get();
             }
         } elseif ($userRole === 'dueño') {
             // El dueño solo puede ver los barberos de su barbería
@@ -42,12 +42,12 @@ class BarberoController extends Controller
             if (!$barberia) {
                 return response()->json(['data' => []]);
             }
-            $barberos = $barberia->barberos()->with('user', 'servicios')->get();
+            $barberos = $barberia->barberos()->with('user', 'servicios', 'horarios')->get();
         } else {
             // Clientes y otros roles pueden ver barberos de una barbería específica
             if ($barberia_id) {
                 $barberos = Barbero::where('barberia_id', $barberia_id)
-                    ->with('user', 'servicios')->get();
+                    ->with('user', 'servicios', 'horarios')->get();
             } else {
                 $barberos = collect([]);
             }
